@@ -361,3 +361,20 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Assets/Space Soldier
+/Assets/Thirdparty/Ciathyza/Gridbox Prototype Materials
+/Assets/TutorialInfo
+/Library
+/ProjectSettings
+/Temp
+/UserSettings
+/.vsconfig
+/3D_Shooter.sln
+/Assembly-CSharp-Editor.csproj
+/Assembly-CSharp.csproj
+/Assets/Settings
+/Assets/GameObject.prefab
+/Assets/Readme.asset
+/Assets/UniversalRenderPipelineGlobalSettings.asset
+/Assets/Scenes
+/Assets/Resources
