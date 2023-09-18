@@ -10,6 +10,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     [SerializeField] private float sensetive;
     [SerializeField] private Vector3 offset;
+    [SerializeField] private float offsetLerpRate;
     [SerializeField] private float rotateTargetLerpRate;
 
     [Header("RotationLimit")]
@@ -47,7 +48,8 @@ public class ThirdPersonCamera : MonoBehaviour
 
         deltaRotationY = ClampAngle(deltaRotationY, minAngleLimitY, maxAngleLimitY);
 
-        offset = Vector3.Lerp(offset, targetOffset, Time.deltaTime * sensetive);
+        // offset = Vector3.Lerp(offset, targetOffset, Time.deltaTime * sensetive);
+        offset = Vector3.MoveTowards(offset, targetOffset, Time.deltaTime * offsetLerpRate);
         
         Quaternion finalRotation = Quaternion.Euler(-deltaRotationY, deltaRotationX, 0);
         Vector3 finalPosition = target.position - (finalRotation * Vector3.forward * distanceCamera);
