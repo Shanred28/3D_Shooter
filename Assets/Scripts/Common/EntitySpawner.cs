@@ -1,18 +1,22 @@
 using UnityEngine;
 
-    public class EntitySpawner : MonoBehaviour
+public class EntitySpawner : MonoBehaviour
+{
+    public enum SpawnMode
     {
-        public enum SpawnMode
-        { 
-            Start,
-            Loop
-        }
+        Start,
+        Loop
+    }
 
-        [SerializeField] private Entity[] m_EntityPrefab;
-        [SerializeField] private CubeArea m_Area;
-        [SerializeField] private SpawnMode m_SpawnMode;
-        [SerializeField] private int m_NumSpawns;
-        [SerializeField] private float m_RespawnTime;
+    [SerializeField] private Drone m_EntityPrefab;
+    [SerializeField] private CubeArea m_Area;
+    [SerializeField] private SpawnMode m_SpawnMode;
+    [SerializeField] private int m_NumSpawns;
+    [SerializeField] private float m_RespawnTime;
+
+    [Header("Characteristic Entity Spawn")]
+    [SerializeField] private CubeArea areaPatrol;
+    [SerializeField] private float timeGetChangeTargetPoint;
 
         private float m_Timer;
 
@@ -41,13 +45,12 @@ using UnityEngine;
 
         private void SpawnEntities()
         {
-            for (int i = 0; i < m_NumSpawns; i++)
-            {
-                int index = Random.Range(0, m_EntityPrefab.Length);
 
-                GameObject e = Instantiate(m_EntityPrefab[index].gameObject);
+                Drone e = Instantiate(m_EntityPrefab);
+                e.isPatrul = true;
+        e.areaPatrol = areaPatrol;
+        e.timeGetChangeTargetPoint = timeGetChangeTargetPoint;
+                e.transform.position = m_Area.GetRandomInsadeZone();
 
-              //  e.transform.position = m_Area.GetRandominsideZone();
-            }
         }
     }

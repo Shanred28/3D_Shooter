@@ -3,6 +3,7 @@ using UnityEngine;
 public class CharacterMovementController : MonoBehaviour
 {
     [SerializeField] private CharacterMovement characterMovement;
+    [SerializeField] private PlayerShooter playerShooter;
     [SerializeField] private ThirdPersonCamera targetCamera;
     [SerializeField] private Vector3 aimingOffset;
 
@@ -30,6 +31,11 @@ public class CharacterMovementController : MonoBehaviour
         }
         else
             targetCamera.IsRotateTarget = false;
+
+        if (Input.GetMouseButton(0))
+            playerShooter.Shoot();
+
+
 
         if (Input.GetMouseButtonDown(1))
         {
