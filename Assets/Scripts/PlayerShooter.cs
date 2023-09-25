@@ -5,7 +5,7 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private CharacterMovement characterMovement;
     [SerializeField] private Weapon weapon;
     [SerializeField] private SpreadShootRig spreadShootRig;
-    [SerializeField] private Camera camera;
+    [SerializeField] private new Camera  camera;
     [SerializeField] private RectTransform imageSigh;
 
     public void Shoot()

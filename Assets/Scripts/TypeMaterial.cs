@@ -11,6 +11,6 @@ public class TypeMaterial : MonoBehaviour
 
 
     [SerializeField] private materialType material;
-    public materialType Material => material;
+    public materialType materiall => material;
 
 }

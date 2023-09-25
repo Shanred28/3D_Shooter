@@ -40,6 +40,7 @@ public class ThirdPersonCamera : MonoBehaviour
         defaultOffset = offset;
         targetOffset = offset;
         defaultDistanceCamera = distanceCamera;
+        transform.SetParent(null);
     }
     private void Update()
     {

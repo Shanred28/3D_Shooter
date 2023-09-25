@@ -22,7 +22,8 @@ public class Projectile : Entity
 
         RaycastHit hit; 
 
-        if (Physics.Raycast(transform.position, transform.forward,out hit, stepLenght) == true)
+        if (Physics.Raycast(transform.position, transform.forward,out hit, stepLenght) == true 
+            && hit.collider.isTrigger == false)
         {
             Destructible dest = hit.collider.transform.root.GetComponent<Destructible>();
             if (dest != null && dest != m_Perent)
@@ -43,11 +44,12 @@ public class Projectile : Entity
     protected void OnProjectileLifeEnd(Collider col, Vector3 pos, Vector3 normal)
     {
 
-        if (col.transform.root.TryGetComponent<TypeMaterial>(out TypeMaterial typeMatrial))
+        if (col.transform.TryGetComponent(out TypeMaterial typeMatrial))
         {
 
-            if (typeMatrial.Material == materialType.Metall)
+            if (typeMatrial.materiall == materialType.Metall)
             {
+
                 ImpactEffect impact = Instantiate(m_ImpactEffectMetallPrefab, pos, Quaternion.LookRotation(normal));
                 impact.transform.SetParent(col.transform);
             }                   

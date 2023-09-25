@@ -26,7 +26,7 @@ using UnityEngine.Events;
         private int m_CurrentHitPoints;
         public int CurrentHitPoints => m_CurrentHitPoints;
 
-        public int HitPoints => m_HitPoints;
+        public int MaxHitPoints => m_HitPoints;
         #endregion
 
         #region Unity Events
@@ -52,12 +52,23 @@ using UnityEngine.Events;
             if (m_CurrentHitPoints <= 0)
                 OnDeath();
         }
+
+    public void ApplyHill(int heal)
+    {
+        m_CurrentHitPoints += heal;
+        if (m_CurrentHitPoints > m_HitPoints)
+            m_CurrentHitPoints = m_HitPoints;
+    }
+    public void HealFull()
+    {
+        m_CurrentHitPoints = m_HitPoints;
+    }
         #endregion
 
-        #region Methods
-        /// <summary>
-        /// Overriding the object destruction event if the hitpoint is below zero.
-        /// </summary>
+    #region Methods
+    /// <summary>
+    /// Overriding the object destruction event if the hitpoint is below zero.
+    /// </summary>
         public bool  IsDestroy = false;
         protected virtual void OnDeath()
         {

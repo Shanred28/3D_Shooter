@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -29,6 +32,10 @@ public class CharacterMovement : MonoBehaviour
     private float baseCharacterHeight;
     private float baseCharacterOffsetCenter;
 
+    // Controll action animations
+    [SerializeField] private EntityActionCollector targetActionCollector;
+    private bool isActionAnimation;
+    public bool IsActionAnimation => isActionAnimation;
 
 
     private CharacterController characterController;
@@ -47,6 +54,14 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
+/*        if (prepare == true)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, targetMoveToInteractPoint, Time.deltaTime * 5);
+
+            if(transform.position == targetMoveToInteractPoint)
+                prepare = false;
+
+        }*/
         Move();
         UpdateDistanceToGround();
     }
@@ -54,6 +69,30 @@ public class CharacterMovement : MonoBehaviour
     private void Move()
     {
         DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);
+        /*        if (prepare == false)
+                {
+                    DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);
+                }
+                else
+                {
+                    DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint, Time.deltaTime * accelerationRate);
+                    if(transform.position == DirectionControl)
+                        prepare = false;
+                }*/
+        /*if (prepare == true)
+        {
+            DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint, Time.deltaTime * accelerationRate);
+            movementDirections = DirectionControl * GetCurrentSpeedByState();
+            movementDirections = transform.TransformDirection(movementDirections);
+            movementDirections += Physics.gravity * Time.deltaTime;
+            characterController.Move(movementDirections * Time.deltaTime);
+            if(transform.position == targetMoveToInteractPoint)
+                prepare = false;
+            return;
+        }
+        else
+            DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);*/
+
 
         if (IsGrounded == true)
         {
@@ -138,6 +177,32 @@ public class CharacterMovement : MonoBehaviour
         return rifleRunSpeed;
     }
 
+    public void MoveActionPoint()
+    {
+        List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
+
+        for (int i = 0; i < actionsList.Count; i++)
+        {
+            actionsList[i].StartAction();
+           
+        }
+    }
+
+    private Vector3 targetMoveToInteractPoint;
+    private bool prepare;
+    public void PreapreAction()
+    {
+/*        List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
+
+        for (int i = 0; i < actionsList.Count; i++)
+        {
+            actionsList[i].   StartAction();
+        }*/
+        
+       // StartCoroutine(MoveTo(targetInteractAction));
+        
+    }
+
     private void UpdateDistanceToGround()
     {
         RaycastHit hit;
@@ -145,5 +210,30 @@ public class CharacterMovement : MonoBehaviour
         {
             distanceToGround = Vector3.Distance(transform.position, hit.point);
         }
+    }
+
+    private float dist;
+    private bool istarget = false;
+    IEnumerator MoveTo( Vector3 target)
+    {
+        dist = Vector3.Distance(transform.position, target);
+        while (istarget == false) 
+        {
+            DirectionControl = Vector3.MoveTowards(transform.position, target, Time.deltaTime * accelerationRate);
+            movementDirections = DirectionControl * GetCurrentSpeedByState();
+            movementDirections = transform.TransformDirection(movementDirections);
+            movementDirections += Physics.gravity * Time.deltaTime;
+            characterController.Move(movementDirections * Time.deltaTime);
+            transform.LookAt(target);
+            dist = Vector3.Distance(transform.position, target);
+            if(dist < 1)
+                istarget = true;
+        }
+        
+        
+        
+        print("startMove");
+        yield return new WaitForSeconds(15f);
+        print("endMove");
     }
 }

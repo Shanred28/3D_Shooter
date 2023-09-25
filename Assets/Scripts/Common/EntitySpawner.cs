@@ -47,9 +47,9 @@ public class EntitySpawner : MonoBehaviour
         {
 
                 Drone e = Instantiate(m_EntityPrefab);
-                e.isPatrul = true;
+/*                e.isPatrul = true;
         e.areaPatrol = areaPatrol;
-        e.timeGetChangeTargetPoint = timeGetChangeTargetPoint;
+        e.timeGetChangeTargetPoint = timeGetChangeTargetPoint;*/
                 e.transform.position = m_Area.GetRandomInsadeZone();
 
         }
