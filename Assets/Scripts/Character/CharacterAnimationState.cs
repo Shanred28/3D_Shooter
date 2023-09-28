@@ -13,6 +13,7 @@ public class CharacterAnimatorParametersName
     public string Jump;
     public string GroundSpeed;
     public string DistanceToGround;
+    public string ClimbingLadder;
 
 }
 
@@ -45,26 +46,34 @@ public class CharacterAnimationState : MonoBehaviour
 
     [SerializeField] private AnimationCrossFadeParametrs jumpIdleFade;
     [SerializeField] private AnimationCrossFadeParametrs jumpMoveFade;
+   // [SerializeField] private AnimationCrossFadeParametrs climbingLadderMove;
 
     private Vector3 inputControl;
 
     private void LateUpdate()
     {
         Vector3 movementSpeed = transform.InverseTransformDirection( targetCharacterController.velocity);
-        inputControl = Vector3.MoveTowards(inputControl, characterMovement.TargetDirectionControl, Time.deltaTime * INPUT_CONTROL_LERP);
+        inputControl = Vector3.MoveTowards(inputControl, characterMovement.DirectionControl, Time.deltaTime * INPUT_CONTROL_LERP);
         targetAnimator.SetFloat(animatorParametersName.NormolizeMovementX,  inputControl.x);
         targetAnimator.SetFloat(animatorParametersName.NormolizeMovementZ,  inputControl.z);
 
         targetAnimator.SetBool(animatorParametersName.Sprint, characterMovement.IsSprint);
         targetAnimator.SetBool(animatorParametersName.Crouch, characterMovement.IsCrouch);
         targetAnimator.SetBool(animatorParametersName.Aiming, characterMovement.IsAiming);
+        targetAnimator.SetBool(animatorParametersName.ClimbingLadder, characterMovement.IsClimbing);
         targetAnimator.SetBool(animatorParametersName.Ground, characterMovement.IsGrounded);
+
 
         Vector3 groundSpeed = targetCharacterController.velocity;
         groundSpeed.y = 0;
         targetAnimator.SetFloat(animatorParametersName.GroundSpeed, groundSpeed.magnitude);
 
-        if (characterMovement.IsJump == true)
+/*        if (characterMovement.IsClimbing == true)
+        {
+            CrossFade(climbingLadderMove);
+        }*/
+
+            if (characterMovement.IsJump == true)
         {
             if (groundSpeed.magnitude <= 0.03f) 
             {

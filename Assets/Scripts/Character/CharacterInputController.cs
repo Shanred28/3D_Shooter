@@ -11,53 +11,45 @@ public class CharacterInputController : MonoBehaviour
     [SerializeField] private EntityActionCollector targetActionCollector;
 
 
-    private float dist;
+    public bool IsActionEveleble =false;
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
+    
     private void Update()
     {
-/*        if (prepare == false)
-        {*/
+
             characterMovement.TargetDirectionControl = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
             targetCamera.rotateControl = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        /*  }
 
-         else
-         {
-             //characterMovement.TargetDirectionControl = Vector3.MoveTowards(transform.position, targetMoveToInteractPoint, Time.deltaTime * 0.0013f);
-             var dis = Vector3.Distance(transform.position, targetMoveToInteractPoint);
-             characterMovement.TargetDirectionControl = Vector3.MoveTowards(transform.position, targetMoveToInteractPoint, dis);
-             transform.LookAt(targetMoveToInteractPoint);
-             if (dis < 1)
-             {
-                 characterMovement.TargetDirectionControl = transform.position;
-                 prepare = false;
-             }
-
-
-         }*/
-        targetCamera.IsRotateTarget = true;
         if (characterMovement.IsAiming == false)
             targetCamera.ScrollDistanceCamera(Input.GetAxis("Mouse ScrollWheel"));
 
-/*        if (characterMovement.TargetDirectionControl != Vector3.zero || characterMovement.IsAiming == true)
+        if (characterMovement.TargetDirectionControl != Vector3.zero || characterMovement.IsAiming == true)
         { 
-            
+            targetCamera.IsRotateTarget = true;
         }
         else
-            targetCamera.IsRotateTarget = false;*/
+            targetCamera.IsRotateTarget = false;
 
+
+        
         if (Input.GetKeyDown(KeyCode.E))
         {
+            if (IsActionEveleble == true)
+            {
+                List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
 
-            characterMovement.PreapreAction();
-
- 
+                for (int i = 0; i < actionsList.Count; i++)
+                {
+                    characterMovement.PreapreAction(actionsList[i]);
+                    // actionsList[i].StartAction();
+                }
+                IsActionEveleble = false;
+            }
         }
 
         if (Input.GetMouseButton(0))

@@ -12,20 +12,24 @@ public class TriggerInteractAction : MonoBehaviour
 
     [SerializeField] private int interactAmount;
 
-    [SerializeField] private ActionInteractProperties actionInteractProperties;
+    [SerializeField] private ActionInteractProperties _actionInteractProperties;
+    public ActionInteractProperties ActionInteractProperties => _actionInteractProperties;
 
     protected ActionInteract actionInteract;
 
+
+    protected CharacterMovement characterMovement;
+    private CharacterInputController inputController;
     public GameObject owner;
 
     protected virtual void InitActionProperties()
     {
-        actionInteract.SetProperties(actionInteractProperties);
+        actionInteract.SetProperties(_actionInteractProperties);
     }
     protected virtual void OnStartAction(GameObject owner) { }
     protected virtual void OnEndAction(GameObject owner) { }
 
-    private void OnTriggerEnter(Collider other)
+    private  void OnTriggerEnter(Collider other)
     {
         if (interactAmount == 0) return;
 
@@ -39,9 +43,17 @@ public class TriggerInteractAction : MonoBehaviour
                 actionInteract.IsCanStart = true;
 
                 actionInteract.EventOnStart.AddListener(ActionStarted);
-                actionInteract.EventOnEnd.AddListener(AtionEnded);
+                actionInteract.EventOnEnd.AddListener(ActionEnded);
 
                 owner = other.gameObject;
+                var sdfd =ActionInteractProperties.InteractTransform;
+                characterMovement = owner.GetComponent<CharacterMovement>();
+                characterMovement.SetPropertyAction(sdfd.transform.position);
+                inputController = owner.GetComponent<CharacterInputController>();
+                inputController.IsActionEveleble = true;
+
+
+
             }
         }
     }
@@ -57,9 +69,11 @@ public class TriggerInteractAction : MonoBehaviour
             if (actionInteract != null)
             {
                 actionInteract.IsCanStart = false;
+                inputController.IsActionEveleble = false;
+               
 
                 actionInteract.EventOnStart.RemoveListener(ActionStarted);
-                actionInteract.EventOnEnd.RemoveListener(AtionEnded);
+                actionInteract.EventOnEnd.RemoveListener(ActionEnded);
             }
         }
     }
@@ -69,12 +83,12 @@ public class TriggerInteractAction : MonoBehaviour
         OnStartAction(owner);
     }
 
-    private void AtionEnded()
+    private void ActionEnded()
     {
         actionInteract.IsCanStart = false;
 
         actionInteract.EventOnStart.RemoveListener(ActionStarted);
-        actionInteract.EventOnEnd.RemoveListener(AtionEnded);
+        actionInteract.EventOnEnd.RemoveListener(ActionEnded);
 
         eventOnInteract?.Invoke();
 

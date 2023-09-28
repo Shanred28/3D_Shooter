@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -43,7 +41,10 @@ public class CharacterMovement : MonoBehaviour
     public Vector3 DirectionControl;
     private Vector3 movementDirections;
 
-   
+
+    public EntityContextAction action;
+    private Vector3 targetMoveToInteractPoint;
+    private bool IsMoveAction = false;
 
     private void Start()
     {
@@ -54,60 +55,77 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
-/*        if (prepare == true)
+           
+
+        if (IsClimbing == false)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetMoveToInteractPoint, Time.deltaTime * 5);
+            TargetControlMove();
+            UpdateDistanceToGround();
 
-            if(transform.position == targetMoveToInteractPoint)
-                prepare = false;
+        }
+            
 
-        }*/
-        Move();
-        UpdateDistanceToGround();
+
+        
     }
 
+
+    private void FixedUpdate()
+    {
+        if (IsClimbing == true)
+            ClimbingMove();
+        Move();
+    }
+
+    // Движение в FixedUpdate.
     private void Move()
     {
-        DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);
-        /*        if (prepare == false)
-                {
-                    DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);
-                }
-                else
-                {
-                    DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint, Time.deltaTime * accelerationRate);
-                    if(transform.position == DirectionControl)
-                        prepare = false;
-                }*/
-        /*if (prepare == true)
-        {
-            DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint, Time.deltaTime * accelerationRate);
-            movementDirections = DirectionControl * GetCurrentSpeedByState();
-            movementDirections = transform.TransformDirection(movementDirections);
-            movementDirections += Physics.gravity * Time.deltaTime;
-            characterController.Move(movementDirections * Time.deltaTime);
-            if(transform.position == targetMoveToInteractPoint)
-                prepare = false;
-            return;
-        }
-        else
-            DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);*/
-
-
         if (IsGrounded == true)
         {
             movementDirections = DirectionControl * GetCurrentSpeedByState();
-            if (isJump== true)
+            if (isJump == true)
             {
                 movementDirections.y = jumpSpeed;
-                isJump =false;
+                isJump = false;
             }
 
             movementDirections = transform.TransformDirection(movementDirections);
         }
+        movementDirections += Physics.gravity * Time.fixedDeltaTime;
+        characterController.Move(movementDirections * Time.fixedDeltaTime);
+    }
 
-        movementDirections += Physics.gravity * Time.deltaTime;
-        characterController.Move(movementDirections * Time.deltaTime);
+    // Вычесления направления в Update.
+    private void TargetControlMove()
+    {
+        if (IsMoveAction == false)
+        {
+            DirectionControl = Vector3.MoveTowards(DirectionControl, TargetDirectionControl, Time.deltaTime * accelerationRate);
+        }
+        else
+        {
+            var dist = Vector3.Distance(transform.position, targetMoveToInteractPoint);
+            transform.LookAt(targetMoveToInteractPoint);
+
+            if (dist > 1f)
+            {
+                DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint.normalized, Time.deltaTime * accelerationRate);
+            }
+            else
+            {
+                List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
+
+                for (int i = 0; i < actionsList.Count; i++)
+                {
+
+                    actionsList[i].StartAction();
+                }
+
+                IsMoveAction = false;
+            }
+        }
+
+
     }
 
     public void Jump()
@@ -177,30 +195,28 @@ public class CharacterMovement : MonoBehaviour
         return rifleRunSpeed;
     }
 
-    public void MoveActionPoint()
+    public void ClimbingMove(/*Vector3 target*/)
     {
-        List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
-
-        for (int i = 0; i < actionsList.Count; i++)
-        {
-            actionsList[i].StartAction();
-           
-        }
+        DirectionControl = Vector3.MoveTowards(DirectionControl, new Vector3(DirectionControl.x, TargetDirectionControl.z, DirectionControl.z), Time.deltaTime);   
     }
 
-    private Vector3 targetMoveToInteractPoint;
-    private bool prepare;
-    public void PreapreAction()
-    {
-/*        List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
+    public bool IsClimbing;
 
-        for (int i = 0; i < actionsList.Count; i++)
-        {
-            actionsList[i].   StartAction();
-        }*/
+    public void ClimbingLadder()
+    {
+        IsClimbing = true;
         
-       // StartCoroutine(MoveTo(targetInteractAction));
+    }
+
+    public void SetPropertyAction(Vector3 vector3)
+    {
+        targetMoveToInteractPoint = vector3;      
+    }
+    public void PreapreAction(EntityContextAction setAction)
+    {
+        action = setAction;
         
+        IsMoveAction = true;        
     }
 
     private void UpdateDistanceToGround()
@@ -210,30 +226,5 @@ public class CharacterMovement : MonoBehaviour
         {
             distanceToGround = Vector3.Distance(transform.position, hit.point);
         }
-    }
-
-    private float dist;
-    private bool istarget = false;
-    IEnumerator MoveTo( Vector3 target)
-    {
-        dist = Vector3.Distance(transform.position, target);
-        while (istarget == false) 
-        {
-            DirectionControl = Vector3.MoveTowards(transform.position, target, Time.deltaTime * accelerationRate);
-            movementDirections = DirectionControl * GetCurrentSpeedByState();
-            movementDirections = transform.TransformDirection(movementDirections);
-            movementDirections += Physics.gravity * Time.deltaTime;
-            characterController.Move(movementDirections * Time.deltaTime);
-            transform.LookAt(target);
-            dist = Vector3.Distance(transform.position, target);
-            if(dist < 1)
-                istarget = true;
-        }
-        
-        
-        
-        print("startMove");
-        yield return new WaitForSeconds(15f);
-        print("endMove");
-    }
+    }   
 }
