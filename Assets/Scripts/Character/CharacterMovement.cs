@@ -41,6 +41,8 @@ public class CharacterMovement : MonoBehaviour
     public Vector3 DirectionControl;
     private Vector3 movementDirections;
 
+    public bool UpdatePosition;
+    public float CurrentSpeed => GetCurrentSpeedByState();
 
     public EntityContextAction action;
     private Vector3 targetMoveToInteractPoint;
@@ -62,19 +64,16 @@ public class CharacterMovement : MonoBehaviour
             TargetControlMove();
             UpdateDistanceToGround();
 
-        }
-            
-
-
-        
+        }                  
     }
-
 
     private void FixedUpdate()
     {
         if (IsClimbing == true)
             ClimbingMove();
-        Move();
+
+       
+           Move();
     }
 
     // Движение в FixedUpdate.
@@ -92,7 +91,8 @@ public class CharacterMovement : MonoBehaviour
             movementDirections = transform.TransformDirection(movementDirections);
         }
         movementDirections += Physics.gravity * Time.fixedDeltaTime;
-        characterController.Move(movementDirections * Time.fixedDeltaTime);
+        if (UpdatePosition == true)
+            characterController.Move(movementDirections * Time.fixedDeltaTime);
     }
 
     // Вычесления направления в Update.
@@ -124,8 +124,6 @@ public class CharacterMovement : MonoBehaviour
                 IsMoveAction = false;
             }
         }
-
-
     }
 
     public void Jump()

@@ -70,4 +70,10 @@ public class Drone : Destructible
             weaponTurret[i].Fire();
         }
     }
+
+    public void DeadDestroy()
+    {
+       
+        OnDeath();
+    }
 }

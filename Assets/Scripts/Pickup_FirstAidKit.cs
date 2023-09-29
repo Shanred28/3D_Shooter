@@ -8,12 +8,13 @@ public class Pickup_FirstAidKit : TriggerInteractAction
     }
     protected override void OnEndAction(GameObject owner)
     {
-        base.OnEndAction(owner);
+        
         Destructible des = owner.transform.root.GetComponent<Destructible>();
 
         if(des != null)
             des.HealFull();
 
         Destroy(gameObject);
+        base.OnEndAction(owner);
     }
 }

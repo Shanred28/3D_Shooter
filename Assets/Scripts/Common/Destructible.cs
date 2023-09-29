@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -62,6 +63,7 @@ using UnityEngine.Events;
     public void HealFull()
     {
         m_CurrentHitPoints = m_HitPoints;
+        ChangeHp.Invoke();
     }
         #endregion
 
@@ -76,7 +78,67 @@ using UnityEngine.Events;
             IsDestroy = true;
             Destroy(gameObject);
         }
-        #endregion
+    #endregion
+
+    public static Destructible FindNearest(Vector3 position)
+    { 
+        float minDist = float.MaxValue;
+        Destructible target = null;
+
+        foreach (Destructible dest in m_AllDestructibles)
+        {
+            float curDist = Vector3.Distance(dest.transform.position, position);
+
+            if (curDist < minDist)
+            { 
+                minDist = curDist;
+                target = dest;
+            }
+        }
+        return target;
+    }
+
+    public static Destructible FindNearestNonTamMember(Destructible destructible)
+    {
+        float minDist = float.MaxValue;
+        Destructible target = null;
+
+        foreach (Destructible dest in m_AllDestructibles)
+        {
+            float curDist = Vector3.Distance(dest.transform.position, destructible.transform.position);
+
+            if (curDist < minDist && destructible.TeamId != dest.TeamId)
+            {
+                minDist = curDist;
+                target = dest;
+            }
+        }
+        return target;
+    }
+
+    public static List<Destructible> GetAllTeamMember(int teamId)
+    { 
+        List<Destructible> teamDestructible = new List<Destructible>();
+
+        foreach (Destructible dest in m_AllDestructibles)
+        { 
+            if(dest.TeamId == teamId)
+                teamDestructible.Add(dest);
+        }
+        return teamDestructible;
+    }
+
+    public static List<Destructible> GetAllNonTeamMember(int teamId)
+    {
+        List<Destructible> teamDestructible = new List<Destructible>();
+
+        foreach (Destructible dest in m_AllDestructibles)
+        {
+            if (dest.TeamId != teamId)
+                teamDestructible.Add(dest);
+        }
+        return teamDestructible;
+    }
 
         private static HashSet<Destructible> m_AllDestructibles;
         public static IReadOnlyCollection<Destructible> AllDestructibles => m_AllDestructibles;

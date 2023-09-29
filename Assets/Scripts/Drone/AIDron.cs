@@ -10,6 +10,8 @@ public class AIDron : MonoBehaviour
     private Vector3 movementTargetPos;
     private Transform shootTarget;
 
+    private bool isAiDron = true;
+
     private Transform player;
     private void Start()
     {
@@ -20,6 +22,7 @@ public class AIDron : MonoBehaviour
 
     private void Update()
     {
+        if(isAiDron)
         UpdateAI();
     }
 
@@ -71,6 +74,11 @@ public class AIDron : MonoBehaviour
             drone.Fire(shootTarget.position);
         }
 
+    }
+
+    public void DisableAI()
+    {
+        isAiDron = false;
     }
 
 #if UNITY_EDITOR

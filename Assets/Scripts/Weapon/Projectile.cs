@@ -52,20 +52,14 @@ public class Projectile : Entity
 
                 ImpactEffect impact = Instantiate(m_ImpactEffectMetallPrefab, pos, Quaternion.LookRotation(normal));
                 impact.transform.SetParent(col.transform);
-            }                   
+            }
+            else
+            {
 
-            /*            if (typeMatrial.Material == materialType.Stone)
-                        {
-                            ImpactEffect impact = Instantiate(m_ImpactEffectStonePrefab, pos, Quaternion.LookRotation(normal));
-                            impact.transform.SetParent(col.transform);
-                        }*/
+                ImpactEffect impact = Instantiate(m_ImpactEffectStonePrefab, pos, Quaternion.LookRotation(normal));
+                impact.transform.SetParent(col.transform);
+            }
         }
-        else
-        {
-            ImpactEffect impact = Instantiate(m_ImpactEffectStonePrefab, pos, Quaternion.LookRotation(normal));
-            impact.transform.SetParent(col.transform);
-        }
-
         Destroy(gameObject);
     }
 
