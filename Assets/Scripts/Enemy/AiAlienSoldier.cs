@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +11,7 @@ public class AiAlienSoldier : MonoBehaviour
         Idle,
         PatrolRandom,
         CirclePatrol,
-        PersueTarget,
+        PursuetTarget,
         SeekTarget
     }
 
@@ -24,13 +25,15 @@ public class AiAlienSoldier : MonoBehaviour
 
     [SerializeField] private ColliderViewer _colliderViewer;
 
+    [SerializeField] private float _aimingDistance;
+
     [SerializeField] private int _patrolPatchNodeIndex = 0;
 
     private NavMeshPath _navMeshPath;
     private PatrolPathNode _currentPathNode;
 
     private GameObject _potentionalTarget;
-    private Transform _pursueTarget;
+    private Transform _pursuetTarget;
     private Vector3 _seekTarget;
 
     private void Start()
@@ -39,6 +42,8 @@ public class AiAlienSoldier : MonoBehaviour
         _characterMovement.UpdatePosition = false;
         _navMeshPath = new NavMeshPath();
         StartBehaviour(_aiBehaviour);
+
+        _alienSoldier.OnGetDamage += OnGetDamage;
     }
 
     private void Update()
@@ -47,6 +52,21 @@ public class AiAlienSoldier : MonoBehaviour
         UpdateAI();
     }
 
+    private void OnDestroy()
+    {
+        _alienSoldier.OnGetDamage -= OnGetDamage;
+    }
+
+    // Handler
+    private void OnGetDamage(Destructible other)
+    {
+        if (other.TeamId != _alienSoldier.TeamId)
+        {
+            ActionAssignTargetAllTeamMember(other.transform);
+        }
+    }
+
+    // AI
     private void UpdateAI()
     {
         ActionUpdateTarget();
@@ -56,10 +76,18 @@ public class AiAlienSoldier : MonoBehaviour
             return;
         }
 
-        if (_aiBehaviour == AIBehaviour.PersueTarget)
+        if (_aiBehaviour == AIBehaviour.PursuetTarget)
         {
-            _agent.CalculatePath(_pursueTarget.position,_navMeshPath);
+            _agent.CalculatePath(_pursuetTarget.position,_navMeshPath);
             _agent.SetPath(_navMeshPath);
+
+            if (Vector3.Distance(transform.position, _pursuetTarget.position) <= _aimingDistance)
+            {
+                _characterMovement.Aiming();
+                _alienSoldier.Fire(_pursuetTarget.position + new Vector3(0, 1, 0));
+            }
+            else
+                _characterMovement.UnAiming();
         }
 
         if (_aiBehaviour == AIBehaviour.SeekTarget)
@@ -97,15 +125,15 @@ public class AiAlienSoldier : MonoBehaviour
 
         if (_colliderViewer.IsObjectVisible(_potentionalTarget) == true)
         {
-            _pursueTarget = _potentionalTarget.transform;
-            StartBehaviour(AIBehaviour.PersueTarget);
+            _pursuetTarget = _potentionalTarget.transform;
+            ActionAssignTargetAllTeamMember(_pursuetTarget);
         }
         else
         {
-            if (_pursueTarget != null)
+            if (_pursuetTarget != null)
             { 
-                _seekTarget = _pursueTarget.position;
-                _pursueTarget = null;
+                _seekTarget = _pursuetTarget.position;
+                _pursuetTarget = null;
                 StartBehaviour(AIBehaviour.SeekTarget);
             }
         }
@@ -115,23 +143,61 @@ public class AiAlienSoldier : MonoBehaviour
     //Behaviour
     private void StartBehaviour(AIBehaviour state)
     {
+        if (_alienSoldier.IsDestroy == true) return;
+
         if (state == AIBehaviour.Idle)
         { 
             _agent.isStopped = true;
+            _characterMovement.UnAiming();
         }
 
         if (state == AIBehaviour.PatrolRandom)
         {
             _agent.isStopped = false;
+            _characterMovement.UnAiming();
             SetDistinationByPathNode(_patrolPath.GetRandomPathNode());
         }
 
         if (state == AIBehaviour.CirclePatrol)
         {
             _agent.isStopped = false;
+            _characterMovement.UnAiming();
             SetDistinationByPathNode(_patrolPath.GetNextNode(ref _patrolPatchNodeIndex));
         }
+
+        if (state == AIBehaviour.PursuetTarget)
+        {
+            _agent.isStopped = false;
+            
+        }
+
+        if (state == AIBehaviour.SeekTarget)
+        {
+            _agent.isStopped = false;
+            _characterMovement.UnAiming();
+        }
         _aiBehaviour = state;
+    }
+
+    private void ActionAssignTargetAllTeamMember(Transform other)
+    {
+        List<Destructible> team = Destructible.GetAllTeamMember(_alienSoldier.TeamId);
+
+        foreach (Destructible dest in team)
+        { 
+            AiAlienSoldier ai = dest.transform.root.GetComponent<AiAlienSoldier>();
+
+            if (ai != null && ai.enabled == true)
+            {
+                ai.SetPursueTarget(other);
+                ai.StartBehaviour(AIBehaviour.PursuetTarget);
+            }
+        }
+    }
+
+    public void SetPursueTarget(Transform target)
+    { 
+       _pursuetTarget = target;
     }
 
     private void SetDistinationByPathNode(PatrolPathNode node)

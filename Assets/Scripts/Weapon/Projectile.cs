@@ -28,7 +28,7 @@ public class Projectile : Entity
             Destructible dest = hit.collider.transform.root.GetComponent<Destructible>();
             if (dest != null && dest != m_Perent)
             {
-                 dest.ApplyDamage(m_Damage);
+                 dest.ApplyDamage(m_Damage, m_Perent);
             }
 
             OnProjectileLifeEnd(hit.collider, hit.point, hit.normal);

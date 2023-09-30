@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +8,9 @@ using UnityEngine.Events;
     /// </summary>
     public class Destructible : Entity
     {
+    [SerializeField] private UnityEvent _eventOnGetDamage;
+    public UnityAction<Destructible> OnGetDamage; 
+
         #region Properties
         /// <summary>
         /// Object ignores damage.
@@ -28,10 +30,17 @@ using UnityEngine.Events;
         public int CurrentHitPoints => m_CurrentHitPoints;
 
         public int MaxHitPoints => m_HitPoints;
-        #endregion
 
-        #region Unity Events
-        protected virtual void Start()
+     [SerializeField] private int m_TeamId;
+    public int TeamId => m_TeamId;
+
+    [SerializeField] private UnityEvent m_EventOnDeath;
+    public UnityEvent EventOnDeath => m_EventOnDeath;
+
+    #endregion
+
+    #region Unity Events
+    protected virtual void Start()
         {
             m_CurrentHitPoints = m_HitPoints;
         }
@@ -44,12 +53,16 @@ using UnityEngine.Events;
         /// Applying damage to an object.
         /// </summary>
         /// <param name="damage"> Damage apply object</param>
-        public void ApplyDamage(int damage)
+        public void ApplyDamage(int damage, Destructible other)
         {
             if (m_Indestructible) return;
 
             m_CurrentHitPoints -= damage;
             ChangeHp.Invoke();
+            OnGetDamage?.Invoke(other);
+            _eventOnGetDamage?.Invoke();
+
+
             if (m_CurrentHitPoints <= 0)
                 OnDeath();
         }
@@ -158,11 +171,6 @@ using UnityEngine.Events;
 
         public const int TeamIdNeutral = 0;
 
-        [SerializeField] private int m_TeamId;
-        public int TeamId => m_TeamId;
-
-        [SerializeField] private UnityEvent m_EventOnDeath;
-        public UnityEvent EventOnDeath => m_EventOnDeath;
 
         #region Score
         [SerializeField] private int m_ScoreValue;
