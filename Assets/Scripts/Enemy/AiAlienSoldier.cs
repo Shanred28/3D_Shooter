@@ -15,6 +15,13 @@ public class AiAlienSoldier : MonoBehaviour
         SeekTarget
     }
 
+    public enum AlarmType
+    { 
+        Detected,
+        Midle,
+        Non
+    }
+
     [SerializeField] private AIBehaviour _aiBehaviour;
 
     [SerializeField] private AlienSoldier _alienSoldier;
@@ -29,6 +36,8 @@ public class AiAlienSoldier : MonoBehaviour
 
     [SerializeField] private int _patrolPatchNodeIndex = 0;
 
+    [SerializeField] private UI_IndicatorVisable _indicatorVisable;
+
     private NavMeshPath _navMeshPath;
     private PatrolPathNode _currentPathNode;
 
@@ -36,13 +45,17 @@ public class AiAlienSoldier : MonoBehaviour
     private Transform _pursuetTarget;
     private Vector3 _seekTarget;
 
+    private Timer timer;
+    [SerializeField] private float timeDetectingPeripheral;
+
     private void Start()
     {
         _potentionalTarget = Destructible.FindNearestNonTamMember(_alienSoldier)?.gameObject;
         _characterMovement.UpdatePosition = false;
+
         _navMeshPath = new NavMeshPath();
         StartBehaviour(_aiBehaviour);
-
+        timer = Timer.CreateTimer(timeDetectingPeripheral);
         _alienSoldier.OnGetDamage += OnGetDamage;
     }
 
@@ -62,7 +75,16 @@ public class AiAlienSoldier : MonoBehaviour
     {
         if (other.TeamId != _alienSoldier.TeamId)
         {
-            ActionAssignTargetAllTeamMember(other.transform);
+            if (_colliderViewer.IsObjectVisible(_potentionalTarget) == true)
+            {
+                ActionAssignTargetAllTeamMember(other.transform);
+            }
+            else
+            {
+                _seekTarget = other.transform.position;
+                ActionAssignTargetAllTeamMember(other.transform);
+                StartBehaviour(AIBehaviour.SeekTarget);
+            }           
         }
     }
 
@@ -97,7 +119,9 @@ public class AiAlienSoldier : MonoBehaviour
 
             if (AgentReachedDistination() == true)
             {
-                StartBehaviour(AIBehaviour.PatrolRandom);
+                //StartBehaviour(AIBehaviour.PatrolRandom);
+                _pointCentreAreaSeek = _seekTarget;
+               StartCoroutine( SeekAreaTarget());
             }
         }
 
@@ -121,21 +145,55 @@ public class AiAlienSoldier : MonoBehaviour
     // Action
     private void ActionUpdateTarget()
     {
-        if (_potentionalTarget == null) return;
-
-        if (_colliderViewer.IsObjectVisible(_potentionalTarget) == true)
+        if (_potentionalTarget == null)
         {
-            _pursuetTarget = _potentionalTarget.transform;
-            ActionAssignTargetAllTeamMember(_pursuetTarget);
+            timer.Restart(timeDetectingPeripheral);
+            return;
+        } 
+
+        if (_colliderViewer.IsObjectPeripheralVisible(_potentionalTarget) == true)
+        {
+            if (_colliderViewer.IsObjectVisible(_potentionalTarget) == true)
+            {
+                _pursuetTarget = _potentionalTarget.transform;
+                ActionAssignTargetAllTeamMember(_pursuetTarget);
+                Alarm(AlarmType.Detected);
+                timer.Stop();
+            }
+            else
+            {
+                timer.Play();
+                _indicatorVisable.SetAllarmFill(timer.CurrentTime, timeDetectingPeripheral);
+                if (timer.IsComplited)
+                {
+                    _pursuetTarget = _potentionalTarget.transform;
+                    ActionAssignTargetAllTeamMember(_pursuetTarget);
+                    Alarm(AlarmType.Detected);
+                    timer.Stop();
+                }
+            }           
         }
         else
         {
+            timer.Restart(timeDetectingPeripheral);
             if (_pursuetTarget != null)
             { 
                 _seekTarget = _pursuetTarget.position;
+                Alarm(AlarmType.Midle);
                 _pursuetTarget = null;
                 StartBehaviour(AIBehaviour.SeekTarget);
+                timer.Stop();
             }
+        }        
+    }
+
+    [SerializeField] private float _radiusHearing;
+    public void ApplyHearling(Vector3 target)
+    {
+        if (Vector3.Distance(transform.position, target) < _radiusHearing)
+        {
+            _seekTarget = target;
+            StartBehaviour(AIBehaviour.SeekTarget);
         }
     }
 
@@ -200,6 +258,19 @@ public class AiAlienSoldier : MonoBehaviour
        _pursuetTarget = target;
     }
 
+    [SerializeField] private float _radiusAreaSeek;
+    private Vector3 _pointCentreAreaSeek;
+    public Vector3 GetPointRandomSeekArea()
+    {
+        Vector3 result = _pointCentreAreaSeek;
+
+        result.x = Random.Range(result.x - _radiusAreaSeek, result.x +  _radiusAreaSeek );
+        result.z = Random.Range(result.z - _radiusAreaSeek, result.z +  _radiusAreaSeek );
+       
+
+        return result;
+    }
+
     private void SetDistinationByPathNode(PatrolPathNode node)
     {
         _currentPathNode = node;
@@ -233,6 +304,23 @@ public class AiAlienSoldier : MonoBehaviour
         return false;
     }
 
+    private void Alarm(AlarmType alarmType)
+    {
+
+        switch (alarmType)
+        {
+            case AlarmType.Detected:
+                _indicatorVisable?.Detected ();
+                break;
+            case AlarmType.Midle:
+                _indicatorVisable?.MidleDetected();
+                break;
+            case AlarmType.Non:
+                _indicatorVisable?.NonDetected();
+                break;
+        }
+    }
+
     IEnumerator SetBehaviourOnTime(AIBehaviour state, float second)
     {
         AIBehaviour previous = _aiBehaviour;
@@ -242,5 +330,29 @@ public class AiAlienSoldier : MonoBehaviour
         yield return new WaitForSeconds(second);
 
         StartBehaviour(previous);
+    }
+
+    IEnumerator SeekAreaTarget()
+    {
+        _seekTarget = GetPointRandomSeekArea();
+        _agent.CalculatePath(_seekTarget, _navMeshPath);
+        _agent.SetPath(_navMeshPath);
+
+
+        yield return new WaitForSeconds(2);
+
+        _seekTarget = GetPointRandomSeekArea();
+        _agent.CalculatePath(_seekTarget, _navMeshPath);
+        _agent.SetPath(_navMeshPath);
+
+        yield return new WaitForSeconds(2);
+
+        _seekTarget = GetPointRandomSeekArea();
+        _agent.CalculatePath(_seekTarget, _navMeshPath);
+        _agent.SetPath(_navMeshPath);
+
+        yield return new WaitForSeconds(2);
+        Alarm( AlarmType.Non);
+        StartBehaviour(AIBehaviour.PatrolRandom);
     }
 }

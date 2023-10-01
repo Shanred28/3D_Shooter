@@ -41,12 +41,36 @@ public class ColliderViewpoints : MonoBehaviour
             {
                 RaycastHit hit;
 
-                Debug.DrawLine(point, _points[i], Color.blue);
+                Debug.DrawLine(point, _points[i], UnityEngine.Color.blue);
                 if (Physics.Raycast(point, (_points[i] - point).normalized, out hit, viewDistance * 2) == true)
                 {
                     if (hit.collider == _collider)
                     { 
                       return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool IsVisablePeripheralPoint(Vector3 point, Vector3 eyeDir, float viewAngle, float viewDistance)
+    {
+        for (int i = 0; i < _points.Length; i++)
+        {
+            float angle = Vector3.Angle(_points[i] - point, eyeDir);
+            float dist = Vector3.Distance(_points[i], point);
+
+            if (angle <= viewAngle * 0.5f && dist <= viewDistance)
+            {
+                RaycastHit hit;
+
+                Debug.DrawLine(point, _points[i], UnityEngine.Color.green);
+                if (Physics.Raycast(point, (_points[i] - point).normalized, out hit, viewDistance * 2) == true)
+                {
+                    if (hit.collider == _collider)
+                    {
+                        return true;
                     }
                 }
             }
@@ -88,7 +112,7 @@ public class ColliderViewpoints : MonoBehaviour
     {
         if(_points == null) return;
 
-        Gizmos.color = Color.blue;
+        Gizmos.color = UnityEngine.Color.blue;
 
         for (int i = 0; i < _points.Length; i++)
             Gizmos.DrawSphere(_points[i], 0.1f);
