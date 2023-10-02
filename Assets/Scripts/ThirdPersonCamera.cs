@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
-    [SerializeField] private Transform target;
+    [SerializeField] private Transform _target;
     [SerializeField] private float distanceCamera;
     [SerializeField] private float minDistanceCamera;
     [SerializeField] private float maxDistanceCamera;
 
 
     [SerializeField] private float sensetive;
-    [SerializeField] private Vector3 offset;
+    [SerializeField] private Vector3 _offset;
     [SerializeField] private float offsetLerpRate;
     [SerializeField] private float rotateTargetLerpRate;
 
@@ -37,8 +37,8 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private void Start()
     {
-        defaultOffset = offset;
-        targetOffset = offset;
+        defaultOffset = _offset;
+        targetOffset = _offset;
         defaultDistanceCamera = distanceCamera;
         transform.SetParent(null);
     }
@@ -50,21 +50,21 @@ public class ThirdPersonCamera : MonoBehaviour
         deltaRotationY = ClampAngle(deltaRotationY, minAngleLimitY, maxAngleLimitY);
 
         // offset = Vector3.Lerp(offset, targetOffset, Time.deltaTime * sensetive);
-        offset = Vector3.MoveTowards(offset, targetOffset, Time.deltaTime * offsetLerpRate);
+        _offset = Vector3.MoveTowards(_offset, targetOffset, Time.deltaTime * offsetLerpRate);
         
         Quaternion finalRotation = Quaternion.Euler(-deltaRotationY, deltaRotationX, 0);
-        Vector3 finalPosition = target.position - (finalRotation * Vector3.forward * distanceCamera);
+        Vector3 finalPosition = _target.position - (finalRotation * Vector3.forward * distanceCamera);
         finalPosition = AddLocalOffset(finalPosition);
 
         //Calculate current distance
         float targetDistance = distanceCamera;
         RaycastHit hit;
 
-        if (Physics.Linecast(target.position + new Vector3(0, offset.y, 0), finalPosition, out hit) == true)
+        if (Physics.Linecast(_target.position + new Vector3(0, _offset.y, 0), finalPosition, out hit) == true)
         { 
-            float distanceToHit = Vector3.Distance(target.position + new Vector3(0,offset.y,0), hit.point);
+            float distanceToHit = Vector3.Distance(_target.position + new Vector3(0,_offset.y,0), hit.point);
 
-            if (hit.transform != target)
+            if (hit.transform != _target)
             {
                 if (distanceToHit < distanceCamera)
                     targetDistance = distanceToHit - distanceOffsetFromCollisionHit;
@@ -75,7 +75,7 @@ public class ThirdPersonCamera : MonoBehaviour
         currentDistance = Mathf.Clamp(currentDistance,minDistance,distanceCamera);
 
         //Correct camera position
-        finalPosition = target.position - (finalRotation * Vector3.forward * currentDistance);
+        finalPosition = _target.position - (finalRotation * Vector3.forward * currentDistance);
         
         //Apply transform
         transform.rotation = finalRotation;
@@ -85,7 +85,7 @@ public class ThirdPersonCamera : MonoBehaviour
         if (IsRotateTarget == true)
         {
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.x, transform.eulerAngles.y, transform.eulerAngles.z);
-            target.rotation = Quaternion.RotateTowards(target.rotation, targetRotation, Time.deltaTime * rotateTargetLerpRate);
+            _target.rotation = Quaternion.RotateTowards(_target.rotation, targetRotation, Time.deltaTime * rotateTargetLerpRate);
         }
     }
 
@@ -97,9 +97,9 @@ public class ThirdPersonCamera : MonoBehaviour
     private Vector3 AddLocalOffset(Vector3 position)
     {
         Vector3 result = position;
-        result += new Vector3(0, offset.y, 0);
-        result += transform.right * offset.x;
-        result += transform.forward * offset.z;
+        result += new Vector3(0, _offset.y, 0);
+        result += transform.right * _offset.x;
+        result += transform.forward * _offset.z;
 
         return result;
     }
@@ -115,9 +115,9 @@ public class ThirdPersonCamera : MonoBehaviour
         return Mathf.Clamp(angle, min, max);
     }
 
-    public void SetTargetOffset(Vector3 _offset)
+    public void SetTargetOffset(Vector3 offset)
     {
-        targetOffset = _offset;
+        targetOffset = offset;
         playerDistanceCamera = distanceCamera;
         distanceCamera = defaultDistanceCamera;
         //distanceCamera = Mathf.Lerp(distanceCamera, targetOffset.y, Time.deltaTime * sensetive);
@@ -125,10 +125,21 @@ public class ThirdPersonCamera : MonoBehaviour
 
     }
 
+    public void SetOffset(Vector3 offset)
+    {
+        _offset = offset;
+        targetOffset = offset;
+    }
+
     public void SetDefaultOffset()
     {
         targetOffset = defaultOffset;
          distanceCamera = playerDistanceCamera;
        // distanceCamera = Mathf.Lerp(distanceCamera, defaultDistanceCamera, Time.deltaTime * sensetive);
+    }
+
+    public void SetTarget(Transform target)
+    { 
+      _target = target;
     }
 }

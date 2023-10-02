@@ -31,7 +31,7 @@ public class Weapon : MonoBehaviour
         currentPrimaryEnergy = primaryMaxEnergy;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if(m_RefireTimer > 0)
                 m_RefireTimer -= Time.deltaTime;
