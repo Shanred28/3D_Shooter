@@ -31,6 +31,12 @@ public abstract class EntityAction : MonoBehaviour
         eventOnEnd?.Invoke();
     }
 
+    protected virtual void EndActionByAnimation()
+    {
+        isStart = false;
+        eventOnEnd?.Invoke();
+    }
+
     public virtual void SetProperties(EntityActionProperties prop)
     { 
          properties = prop;

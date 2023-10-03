@@ -5,7 +5,8 @@ public enum InteractType
 { 
     PickupItem,
     EnterCodeAccessPanel,
-    ClimbingLadder
+    ClimbingLadder,
+    UseVehicle
 
 }
 
@@ -19,22 +20,14 @@ public class ActionInteractProperties : EntityActionProperties
 
 public class ActionInteract : EntityContextAction
 {
-    [SerializeField] private Transform owner;
+    [SerializeField] protected Transform owner;
 
     [SerializeField] private InteractType interactType;
     public InteractType InteractType => interactType;
 
-    private ActionInteractProperties properties;
+    protected new ActionInteractProperties Properties;
     public override void SetProperties(EntityActionProperties prop)
     {
-        properties = prop as ActionInteractProperties;
+        Properties = prop as ActionInteractProperties;
     }
-
-    public override void StartAction()
-    {
-        if (IsCanStart == false) return;
-        base.StartAction();
-     
-    }
-
 }

@@ -112,6 +112,8 @@ public class CharacterMovement : MonoBehaviour
                 DirectionControl = Vector3.MoveTowards(DirectionControl, targetMoveToInteractPoint.normalized, Time.deltaTime * accelerationRate);
             }
             else
+                IsMoveAction = false;
+/*            else
             {
                 List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
 
@@ -122,7 +124,7 @@ public class CharacterMovement : MonoBehaviour
                 }
 
                 IsMoveAction = false;
-            }
+            }*/
         }
     }
 
@@ -206,14 +208,19 @@ public class CharacterMovement : MonoBehaviour
         
     }
 
-    public void SetPropertyAction(Vector3 vector3)
+/*    public void SetPropertyAction(Vector3 vector3)
     {
         targetMoveToInteractPoint = vector3;      
-    }
-    public void PreapreAction(EntityContextAction setAction)
+    }*/
+/*    public void PreapreAction(EntityContextAction setAction)
     {
         action = setAction;
         
+        IsMoveAction = true;        
+    } */
+    public void PreapreAction(Vector3 interactPoint)
+    {
+        targetMoveToInteractPoint = interactPoint;                    
         IsMoveAction = true;        
     }
 

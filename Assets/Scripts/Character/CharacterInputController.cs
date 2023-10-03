@@ -8,7 +8,8 @@ public class CharacterInputController : MonoBehaviour
     [SerializeField] private PlayerShooter playerShooter;
     [SerializeField] private ThirdPersonCamera targetCamera;
     [SerializeField] private Vector3 aimingOffset;
-    [SerializeField] private EntityActionCollector targetActionCollector;
+
+    [SerializeField] private Vector3 _defaultOffset;
 
 
     public bool IsActionEveleble =false;
@@ -35,22 +36,6 @@ public class CharacterInputController : MonoBehaviour
         else
             targetCamera.IsRotateTarget = false;
 
-
-        
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (IsActionEveleble == true)
-            {
-                List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
-
-                for (int i = 0; i < actionsList.Count; i++)
-                {
-                    characterMovement.PreapreAction(actionsList[i]);
-                    // actionsList[i].StartAction();
-                }
-                IsActionEveleble = false;
-            }
-        }
 
         if (Input.GetMouseButton(0))
         {
@@ -96,5 +81,13 @@ public class CharacterInputController : MonoBehaviour
         {
             characterMovement.UnSprint();
         }
+    }
+
+    public void AssignCamera(ThirdPersonCamera camera)
+    {
+        targetCamera = camera;
+        targetCamera.IsRotateTarget = false;
+        targetCamera.SetOffset(_defaultOffset);
+        targetCamera.SetTarget(characterMovement.transform);
     }
 }

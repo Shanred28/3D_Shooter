@@ -16,14 +16,13 @@ public class HoverVehicle : Vehicle
     [SerializeField] private Transform[] _hoverJets;
     
 
-    private Rigidbody rb;
+    [SerializeField] private Rigidbody rb;
     private bool isGrounded;
     public override float LinearVelocity => rb.velocity.magnitude;
 
     protected override void Start()
     {
         base.Start();
-        rb = GetComponent<Rigidbody>();
     }
 
 

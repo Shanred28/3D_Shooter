@@ -4,6 +4,13 @@ public class Vehicle : Destructible
 {
     [SerializeField] protected float _maxSpeed;
 
+    [SerializeField] protected LightVehicle _lightVehicle;
+
+    [Header("Hud")]
+    [SerializeField] protected GameObject hud;
+    
+
+
     public virtual float LinearVelocity => 0;
 
     public float NormalizedLinearVelocity
@@ -29,7 +36,8 @@ public class Vehicle : Destructible
 
     protected virtual void Update()
     {
-        UpdateEngineSFX();
+        if(isStartDrive == true)
+           UpdateEngineSFX();
     }
 
     private void UpdateEngineSFX()
@@ -39,5 +47,20 @@ public class Vehicle : Destructible
             _engineSFX.pitch = 1.0f + NormalizedLinearVelocity * _engineSFXModifier;
             _engineSFX.volume = 0.5f + NormalizedLinearVelocity;
         }
+    }
+
+    private bool isStartDrive;
+    public virtual void OnStartDrive()
+    {
+        isStartDrive = true;
+        _lightVehicle.OnLight();
+        _engineSFX.Play();
+    }
+
+    public virtual void OffStartDrive()
+    {
+        isStartDrive = false;
+        _lightVehicle.OffLight();
+        _engineSFX.Stop();
     }
 }

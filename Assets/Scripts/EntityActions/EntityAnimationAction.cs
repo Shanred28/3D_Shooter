@@ -9,7 +9,7 @@ public class EntityAnimationAction : EntityAction
     [SerializeField] private float timeDuration;
 
     private Timer timer;
-    private bool isPlayingAnimation;
+    protected bool isPlayingAnimation;
 
     public override void StartAction()
     {
@@ -19,13 +19,18 @@ public class EntityAnimationAction : EntityAction
 
         timer = Timer.CreateTimer(timeDuration, true);
         timer.OnTick += OnTimerTick;
-
     }
 
     public override void EndAction()
     {
-        base.EndAction();
         timer.OnTick -= OnTimerTick;
+        base.EndAction();       
+    }
+
+    protected override void EndActionByAnimation()
+    {
+        timer.OnTick -= OnTimerTick;
+        base.EndActionByAnimation();
     }
 
     private void OnTimerTick()
@@ -40,7 +45,7 @@ public class EntityAnimationAction : EntityAction
             if (animator.GetCurrentAnimatorStateInfo(0).IsName(actionAnimationName) == false)
             {
                 isPlayingAnimation = false;
-                EndAction();
+                EndActionByAnimation();
             }
         }
     }

@@ -5,22 +5,23 @@ using UnityEngine.Events;
 [RequireComponent(typeof(BoxCollider))]
 public class TriggerInteractAction : MonoBehaviour
 {
-    [SerializeField] private UnityEvent eventOnInteract;
-    public UnityEvent EventOnInteract => eventOnInteract;
+    [SerializeField] private UnityEvent eventStartInteract;
+    public UnityEvent EventStartInteract => eventStartInteract;
+
+    [SerializeField] private UnityEvent eventEndInteract;
 
     [SerializeField] private InteractType interactType;
 
     [SerializeField] private int interactAmount;
 
-    [SerializeField] private ActionInteractProperties _actionInteractProperties;
-    public ActionInteractProperties ActionInteractProperties => _actionInteractProperties;
+    [SerializeField] protected ActionInteractProperties _actionInteractProperties;
+    public ActionInteractProperties InteractProperties => _actionInteractProperties;
 
     protected ActionInteract actionInteract;
 
 
     protected CharacterMovement characterMovement;
-    private CharacterInputController inputController;
-    public GameObject owner;
+    protected GameObject owner;
 
     protected virtual void InitActionProperties()
     {
@@ -46,31 +47,21 @@ public class TriggerInteractAction : MonoBehaviour
                 actionInteract.EventOnEnd.AddListener(ActionEnded);
 
                 owner = other.gameObject;
-                var sdfd =ActionInteractProperties.InteractTransform;
                 characterMovement = owner.GetComponent<CharacterMovement>();
-                characterMovement.SetPropertyAction(sdfd.transform.position);
-                inputController = owner.GetComponent<CharacterInputController>();
-                inputController.IsActionEveleble = true;
-
-
-
             }
         }
     }
 
     protected void OnTriggerExit(Collider other) 
     {
-        if (interactAmount == 0 || interactAmount != - 1) return;
-
+        //if (interactAmount == 0 || interactAmount != - 1) return;
         if (other.transform.root.TryGetComponent(out EntityActionCollector actionCollector))
         {
             actionInteract = GetActionInteract(actionCollector);
-
+            
             if (actionInteract != null)
             {
-                actionInteract.IsCanStart = false;
-                inputController.IsActionEveleble = false;
-               
+                actionInteract.IsCanStart = false;              
 
                 actionInteract.EventOnStart.RemoveListener(ActionStarted);
                 actionInteract.EventOnEnd.RemoveListener(ActionEnded);
@@ -81,19 +72,21 @@ public class TriggerInteractAction : MonoBehaviour
     private void ActionStarted()
     {
         OnStartAction(owner);
+        interactAmount--;
+        eventStartInteract?.Invoke();
+        
     }
 
     private void ActionEnded()
     {
         actionInteract.IsCanStart = false;
+        actionInteract.IsCanEnd = false;
 
+        eventEndInteract?.Invoke();
+        OnEndAction(owner);
         actionInteract.EventOnStart.RemoveListener(ActionStarted);
         actionInteract.EventOnEnd.RemoveListener(ActionEnded);
-
-        eventOnInteract?.Invoke();
-
-        interactAmount--;
-        OnEndAction(owner);
+     
     }
 
     private ActionInteract GetActionInteract(EntityActionCollector actionCollector)

@@ -12,7 +12,7 @@ public class ShootingVehicleInputControl : VehicleInputControl
     {
         base.Update();
 
-        m_AimPoint.position = m_CameraShooter.Camera.transform.position +  m_CameraShooter.Camera.transform.forward * 30;
+       m_AimPoint.position = m_CameraShooter.Camera.transform.position +  m_CameraShooter.Camera.transform.forward * 30;
 
         if (Input.GetMouseButton(0))
         {
