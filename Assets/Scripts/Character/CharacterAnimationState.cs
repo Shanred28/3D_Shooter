@@ -68,12 +68,7 @@ public class CharacterAnimationState : MonoBehaviour
         groundSpeed.y = 0;
         targetAnimator.SetFloat(animatorParametersName.GroundSpeed, groundSpeed.magnitude);
 
-/*        if (characterMovement.IsClimbing == true)
-        {
-            CrossFade(climbingLadderMove);
-        }*/
-
-            if (characterMovement.IsJump == true)
+        if (characterMovement.IsJump == true)
         {
             if (groundSpeed.magnitude <= 0.03f) 
             {
@@ -86,7 +81,7 @@ public class CharacterAnimationState : MonoBehaviour
             }
         }
 
-        if (characterMovement.IsGrounded == false)
+        if (characterMovement.IsGrounded == false && characterMovement.IsGrounded == false)
         {
             targetAnimator.SetFloat(animatorParametersName.Jump, movementSpeed.y);
 
@@ -96,9 +91,9 @@ public class CharacterAnimationState : MonoBehaviour
             }
             targetAnimator.SetFloat(animatorParametersName.Jump, movementSpeed.y);
         }
-/*       else
-            targetAnimator.SetFloat(animatorParametersName.Jump, movementSpeed.y);*/
-        
+        else
+            targetAnimator.SetFloat(animatorParametersName.Jump, movementSpeed.y);
+
         targetAnimator.SetFloat(animatorParametersName.DistanceToGround, characterMovement.DistanceToGround);
     }
 

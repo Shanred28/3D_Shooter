@@ -8,5 +8,11 @@ public class SpaceSoldier : Destructible
     {
         EventOnDeath?.Invoke();
         actionDeath.StartAction();
+        print("sdf");
+    }
+
+    public void FallHightDead()
+    {
+        OnDeath();
     }
 }

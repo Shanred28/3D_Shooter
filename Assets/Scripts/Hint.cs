@@ -15,7 +15,7 @@ public class Hint : MonoBehaviour
         canvas = GetComponent<Canvas>();
         canvas.worldCamera = Camera.main;
         lookRotation = Camera.main.transform;
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        target = Player.Instance.transform;
     }
 
     private void Update()

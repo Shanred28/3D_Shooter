@@ -30,7 +30,7 @@ public class TriggerInteractAction : MonoBehaviour
     protected virtual void OnStartAction(GameObject owner) { }
     protected virtual void OnEndAction(GameObject owner) { }
 
-    private  void OnTriggerEnter(Collider other)
+    protected virtual  void OnTriggerEnter(Collider other)
     {
         if (interactAmount == 0) return;
 
@@ -52,7 +52,7 @@ public class TriggerInteractAction : MonoBehaviour
         }
     }
 
-    protected void OnTriggerExit(Collider other) 
+    protected virtual void OnTriggerExit(Collider other) 
     {
         //if (interactAmount == 0 || interactAmount != - 1) return;
         if (other.transform.root.TryGetComponent(out EntityActionCollector actionCollector))

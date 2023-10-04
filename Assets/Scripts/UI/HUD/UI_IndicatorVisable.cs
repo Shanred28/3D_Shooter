@@ -7,7 +7,6 @@ public class UI_IndicatorVisable : MonoBehaviour
     [SerializeField] private Image _indicatorVisableColorAlarmImage;
     [SerializeField] private SpaceSoldier _soldier;
 
-
     private Timer timer;
     [SerializeField] private float timeDisableIndecator;
     private void Start()
@@ -18,8 +17,11 @@ public class UI_IndicatorVisable : MonoBehaviour
 
     public void Update()
     {
-        if(timer.IsComplited)
+        if (timer.IsComplited)
+        {
             _indicatorVisableImage.gameObject.SetActive(false);
+            timer.Restart(timeDisableIndecator);
+        }
     }
 
     public void Detected()
@@ -37,6 +39,7 @@ public class UI_IndicatorVisable : MonoBehaviour
         _indicatorVisableImage.gameObject.SetActive(true);
         _indicatorVisableColorAlarmImage.color = Color.yellow;
         _indicatorVisableImage.fillAmount = 1;
+        
     }
     public void NonDetected()
     {
@@ -50,6 +53,7 @@ public class UI_IndicatorVisable : MonoBehaviour
         timer.Restart(timeDisableIndecator);
         timer.Play();
         _indicatorVisableImage.gameObject.SetActive(true);
+        _indicatorVisableColorAlarmImage.color = Color.yellow;
         _indicatorVisableImage.fillAmount = 1 - currentTime / timeAmount;
     }
 }

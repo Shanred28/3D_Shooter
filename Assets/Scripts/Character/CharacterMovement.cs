@@ -11,6 +11,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float crouchSpeed;
     [SerializeField] private float jumpSpeed;
     [SerializeField] private float accelerationRate;
+    [SerializeField] private float _flyFallDead;
 
     [Header("State")]
     [SerializeField] private float crouchHeight;
@@ -25,7 +26,7 @@ public class CharacterMovement : MonoBehaviour
     public bool IsSprint => isSprint;
     private float distanceToGround;
     public float DistanceToGround => distanceToGround;
-    public bool IsGrounded => distanceToGround < 0.01f;
+    public bool IsGrounded => distanceToGround < 0.09f;
 
     private float baseCharacterHeight;
     private float baseCharacterOffsetCenter;
@@ -64,7 +65,8 @@ public class CharacterMovement : MonoBehaviour
             TargetControlMove();
             UpdateDistanceToGround();
 
-        }                  
+        }
+        FallingFromHeight();
     }
 
     private void FixedUpdate()
@@ -230,6 +232,27 @@ public class CharacterMovement : MonoBehaviour
         if(Physics.Raycast(transform.position, -Vector3.up, out hit, 1000) == true)
         {
             distanceToGround = Vector3.Distance(transform.position, hit.point);
+         }
+    }
+
+    [SerializeField] private SpaceSoldier spaceSoldier;
+    private float _flyTime;
+    private void FallingFromHeight()
+    {
+
+        if (IsGrounded == true && _flyTime < _flyFallDead)
+        {
+            _flyTime = 0;
+            return;
         }
-    }   
+        else
+            _flyTime += Time.deltaTime;
+
+        if (_flyTime > _flyFallDead)
+        { 
+            if(IsGrounded == true)
+                spaceSoldier?.FallHightDead();
+        }
+
+    }
 }

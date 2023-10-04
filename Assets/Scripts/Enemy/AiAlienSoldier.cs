@@ -50,7 +50,7 @@ public class AiAlienSoldier : MonoBehaviour
 
     private void Start()
     {
-        _potentionalTarget = Destructible.FindNearestNonTamMember(_alienSoldier)?.gameObject;
+        _potentionalTarget = Player.Instance.gameObject;
         _characterMovement.UpdatePosition = false;
 
         _navMeshPath = new NavMeshPath();
