@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TriggerAccessPanelKey : TriggerInteractAction
+public class TriggerAccessPanelKeyRed : TriggerInteractAction
 {
     protected override void OnTriggerEnter(Collider other)
     {

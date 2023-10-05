@@ -112,6 +112,11 @@ public class Weapon : MonoBehaviour
         weaponProperties = props;
     }
 
+    public void AddFullEnergy()
+    {
+        currentPrimaryEnergy = primaryMaxEnergy;
+    }
+
     #endregion
 }
 

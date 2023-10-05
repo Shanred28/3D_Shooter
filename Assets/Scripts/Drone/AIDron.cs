@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static AiAlienSoldier;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 [RequireComponent(typeof(Drone))]
 public class AIDron : MonoBehaviour

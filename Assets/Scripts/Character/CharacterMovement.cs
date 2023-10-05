@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
@@ -157,9 +158,15 @@ public class CharacterMovement : MonoBehaviour
     }
     public void UnCrouch()
     {
-        isCrouch = false;
-        characterController.height = baseCharacterHeight;
-        characterController.center = new Vector3(0, baseCharacterOffsetCenter, 0);
+        RaycastHit hit;
+        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y + characterController.height, transform.position.z), Vector3.up, out hit, characterController.height) == true)
+            isCrouch = true;
+        else
+        {
+            isCrouch = false;
+            characterController.height = baseCharacterHeight;
+            characterController.center = new Vector3(0, baseCharacterOffsetCenter, 0);
+        }
     }
 
     public void Sprint()

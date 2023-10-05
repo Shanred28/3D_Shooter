@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class PickupCardRed : TriggerInteractAction
+public class PickupCardYellow : TriggerInteractAction
 {
     protected override void OnEndAction(GameObject owner)
     {
         base.OnEndAction(owner);
-        Player.Instance.AddCardRed();
+        Player.Instance.AddCardYellow();
         Destroy(gameObject);
     }
 }

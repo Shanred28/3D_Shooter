@@ -106,7 +106,7 @@ public class AiAlienSoldier : MonoBehaviour
             if (Vector3.Distance(transform.position, _pursuetTarget.position) <= _aimingDistance)
             {
                 _characterMovement.Aiming();
-                _alienSoldier.Fire(_pursuetTarget.position + new Vector3(0, 1, 0));
+                _alienSoldier.Fire(_pursuetTarget.position + new Vector3(0, 0.8f, 0));
             }
             else
                 _characterMovement.UnAiming();
