@@ -44,7 +44,7 @@ public class EntityAnimationAction : EntityAction
         {
             if (animator.GetCurrentAnimatorStateInfo(0).IsName(actionAnimationName) == false)
             {
-                isPlayingAnimation = false;
+                isPlayingAnimation = false;              
                 EndActionByAnimation();
             }
         }
