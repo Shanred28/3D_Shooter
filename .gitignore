@@ -418,3 +418,5 @@ FodyWeavers.xsd
 /Assets/Material
 /Assets/ScifiOfficeLite
 /Assets/Animations
+/Assets/RPG_FPS_game_assets_industrial/Particles
+*.terrainlayer
