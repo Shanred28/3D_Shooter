@@ -16,7 +16,7 @@ public class UIQuestIndicator : MonoBehaviour
 
     private void Update()
     {
-        if (_targetQuest != null) return;
+        if (_targetQuest == null) return;
 
         Vector3 pos = _camera.WorldToScreenPoint(_targetQuest.position);
 
@@ -38,7 +38,7 @@ public class UIQuestIndicator : MonoBehaviour
     }
 
     private void OnQuestReceivedQuest(Quest quest)
-    {      
+    {
         _imageTargetIndicatorQuest.gameObject.SetActive(true);
         _targetQuest = quest.ReachedPoint;
     }
