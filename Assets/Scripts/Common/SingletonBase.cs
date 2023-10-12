@@ -22,6 +22,11 @@ public abstract class SingletonBase<T> : MonoBehaviour where T : MonoBehaviour
         if (m_DoNotDestroyOnLoad)
             DontDestroyOnLoad(gameObject);
      }
+
+    public void Destroy()
+    {
+        Instance = null;
+    }
 }
 
 

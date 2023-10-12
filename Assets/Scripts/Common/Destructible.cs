@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEngine.GraphicsBuffer;
 
 
-    /// <summary>
-    /// Destructible object on scene.
-    /// </summary>
-    public class Destructible : Entity
+/// <summary>
+/// Destructible object on scene.
+/// </summary>
+    public class Destructible : Entity, ISerializableEntity
     {
     [SerializeField] private UnityEvent _eventOnGetDamage;
     public UnityAction<Destructible> OnGetDamage; 
@@ -78,6 +79,11 @@ using UnityEngine.Events;
         m_CurrentHitPoints = m_HitPoints;
         ChangeHp.Invoke();
     }
+
+    public void SetHitPoint(int hitPoint)
+    {
+        m_CurrentHitPoints = Mathf.Clamp(hitPoint, 0, m_HitPoints);
+    }
         #endregion
 
     #region Methods
@@ -111,7 +117,7 @@ using UnityEngine.Events;
         return target;
     }
 
-    public static Destructible FindNearestNonTamMember(Destructible destructible)
+    public static Destructible FindNearestNonTiamMember(Destructible destructible)
     {
         float minDist = float.MaxValue;
         Destructible target = null;
@@ -125,6 +131,18 @@ using UnityEngine.Events;
                 minDist = curDist;
                 target = dest;
             }
+        }
+        return target;
+    }
+
+    public static Destructible FindPlayer()
+    {
+        Destructible target = null;
+
+        foreach (Destructible dest in m_AllDestructibles)
+        {
+            if(dest.m_TeamId == 0)
+                target = dest;
         }
         return target;
     }
@@ -169,14 +187,53 @@ using UnityEngine.Events;
             m_AllDestructibles.Remove(this);
         }
 
-        public const int TeamIdNeutral = 0;
+
+
+    public const int TeamIdNeutral = 0;
 
 
         #region Score
         [SerializeField] private int m_ScoreValue;
         public int ScoreValue => m_ScoreValue;
 
-        #endregion
-    
+
+
+    #endregion
+
+
+    // Serialize
+    [System.Serializable]
+    public class State
+    {
+        public Vector3 position;
+        public int hitPoins;
+
+        public State() { }
+    }
+
+    [SerializeField] private int m_EntityId;
+    public long EntityId => m_EntityId;
+    public virtual bool IsSerializable()
+    {
+        return m_CurrentHitPoints > 0;
+    }
+
+    public virtual string SerializeState()
+    {
+        State s = new State();
+
+        s.position = transform.position;
+        s.hitPoins = m_CurrentHitPoints;
+
+        return JsonUtility.ToJson(s);
+    }
+
+    public virtual void DeserializeState(string state)
+    {
+        State s = JsonUtility.FromJson<State>(state);
+
+        transform.position = s.position;
+        m_HitPoints = s.hitPoins;
+    }
 }
 

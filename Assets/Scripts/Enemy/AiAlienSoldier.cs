@@ -28,7 +28,6 @@ public class AiAlienSoldier : MonoBehaviour
     [SerializeField] private CharacterMovement _characterMovement;
 
     [SerializeField] private NavMeshAgent _agent;
-    [SerializeField] private PatrolPath _patrolPath;
 
     [SerializeField] private ColliderViewer _colliderViewer;
 
@@ -36,8 +35,11 @@ public class AiAlienSoldier : MonoBehaviour
 
     [SerializeField] private int _patrolPatchNodeIndex = 0;
 
+    public AIBehaviour AiBehaviour { get { return _aiBehaviour; } set { _aiBehaviour = value; } } 
+
     [SerializeField] private UI_IndicatorVisable _indicatorVisable;
 
+    private PatrolPath _patrolPath;
     private NavMeshPath _navMeshPath;
     private PatrolPathNode _currentPathNode;
 
@@ -49,10 +51,11 @@ public class AiAlienSoldier : MonoBehaviour
     [SerializeField] private float timeDetectingPeripheral;
 
     private void Start()
-    {
-        _potentionalTarget = Player.Instance.gameObject;
+    {        
         _characterMovement.UpdatePosition = false;
 
+        FindPatrolPath();
+        FindPotentionalTarget();
         _navMeshPath = new NavMeshPath();
         StartBehaviour(_aiBehaviour);
         timer = Timer.CreateTimer(timeDetectingPeripheral);
@@ -106,6 +109,7 @@ public class AiAlienSoldier : MonoBehaviour
             if (Vector3.Distance(transform.position, _pursuetTarget.position) <= _aimingDistance)
             {
                 _characterMovement.Aiming();
+                print("Firee");
                 _alienSoldier.Fire(_pursuetTarget.position + new Vector3(0, 0.8f, 0));
             }
             else
@@ -143,10 +147,15 @@ public class AiAlienSoldier : MonoBehaviour
     }
 
     // Action
+    private void FindPotentionalTarget()
+    {
+        _potentionalTarget = Destructible.FindPlayer().gameObject;
+    }
+
     private void ActionUpdateTarget()
     {
         if (_potentionalTarget == null)
-        {
+        {           
             timer.Restart(timeDetectingPeripheral);
             return;
         } 
@@ -253,6 +262,11 @@ public class AiAlienSoldier : MonoBehaviour
         }
     }
 
+    public void SetPosition(Vector3 pos)
+    { 
+       _agent.Warp(pos);
+    }
+
     public void SetPursueTarget(Transform target)
     { 
        _pursuetTarget = target;
@@ -318,6 +332,26 @@ public class AiAlienSoldier : MonoBehaviour
             case AlarmType.Non:
                 _indicatorVisable?.NonDetected();
                 break;
+        }
+    }
+
+    private void FindPatrolPath()
+    {
+        if (_patrolPath == null)
+        {
+            PatrolPath[] patrolPath = FindObjectsOfType<PatrolPath>();
+            float minDistance = float.MaxValue;
+
+            for (int i = 0; i < patrolPath.Length; i++)
+            {
+                float dist1 = Vector3.Distance(transform.position, patrolPath[i].transform.position);
+
+                if (dist1 < minDistance)
+                {
+                    minDistance = dist1;
+                    _patrolPath = patrolPath[i];
+                }
+            }
         }
     }
 

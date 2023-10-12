@@ -4,10 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(Drone))]
 public class AIDron : MonoBehaviour
 {
-    [SerializeField] private CubeArea _movementArea;
-
+   
     [SerializeField] private ColliderViewer _colliderViewer;
 
+    private CubeArea _movementArea;
     private Drone _drone;
     private Vector3 _movementTargetPos;
     private Transform _shootTarget;
@@ -18,6 +18,9 @@ public class AIDron : MonoBehaviour
     {
         _drone = GetComponent<Drone>();
         _drone.EventOnDeath.AddListener(OnDroneDeatch);
+
+        FindMovementArea();
+
         _drone.OnGetDamage += OnGetDamage;
     }
 
@@ -112,6 +115,26 @@ public class AIDron : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void FindMovementArea()
+    {
+        if (_movementArea == null)
+        {
+            CubeArea[] cubeAreas = FindObjectsOfType<CubeArea>();
+            float minDistance = float.MaxValue;
+
+            for (int i = 0; i < cubeAreas.Length; i++)
+            {
+                float dist1 = Vector3.Distance(transform.position, cubeAreas[i].transform.position);
+
+                if(dist1 < minDistance)
+                {
+                    minDistance = dist1;
+                   _movementArea = cubeAreas[i];                
+                }
+            }
+        }
     }
 
     private void ActionAssignTargetAllTeamMember(Transform other)

@@ -10,10 +10,12 @@ public class QuestCollector : MonoBehaviour
     [SerializeField] private Quest _currentQuest;
     public Quest CurrentQuest => _currentQuest;
 
-    private void Start()
+    private void Awake()
     {
-        if(_currentQuest != null)
-           AssignQuest(_currentQuest);
+        if (_currentQuest != null)
+        {
+            AssignQuest(_currentQuest);
+        }         
     }
 
     public void AssignQuest(Quest quest)
@@ -39,7 +41,6 @@ public class QuestCollector : MonoBehaviour
         {
             if(LastQuestCompleted != null)
                 LastQuestCompleted.Invoke();
-        }
-            
+        }          
     }
 }

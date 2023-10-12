@@ -20,7 +20,6 @@ public class UIQuestInfo : MonoBehaviour
         _questCollector.QuestCompleted -= OnQuestCompleted;
     }
 
-
     private void OnQuestReceived(Quest quest)
     {
         _descriptionQuestText.gameObject.SetActive(true);

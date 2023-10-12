@@ -20,7 +20,12 @@ public class Hint : MonoBehaviour
 
     private void Update()
     {
-        hint.transform.LookAt(Camera.main.transform);
+        if (lookRotation == null)
+        {
+            lookRotation = Camera.main.transform;
+            if (lookRotation == null) return;
+        }
+        hint.transform.LookAt(lookRotation);
 
         if(Vector3.Distance(transform.position, target.position) < activeRadius)
             hint.SetActive(true);
