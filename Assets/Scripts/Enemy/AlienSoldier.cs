@@ -28,6 +28,7 @@ public class AlienSoldier : Destructible
         public Vector3 position;
         public int hitPoins;
         public int behaviour;
+        public int IdTeam;
 
         public AIAlienState() { }
     }
@@ -39,6 +40,7 @@ public class AlienSoldier : Destructible
         s.position = transform.position;
         s.hitPoins = CurrentHitPoints;
         s.behaviour = (int)_aiAlienSoldier.AiBehaviour;
+        s.IdTeam = TeamId;
 
         return JsonUtility.ToJson(s);
     }
@@ -49,6 +51,7 @@ public class AlienSoldier : Destructible
 
         _aiAlienSoldier.SetPosition(s.position);
         SetHitPoint(s.hitPoins);
+        SetIdTeam(s.IdTeam);
         _aiAlienSoldier.AiBehaviour =(AiAlienSoldier.AIBehaviour) s.behaviour;
     }
 }

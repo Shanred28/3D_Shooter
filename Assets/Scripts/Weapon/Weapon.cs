@@ -21,7 +21,7 @@ public class Weapon : MonoBehaviour
 
     private Destructible owner;
 
-    private AudioSource m_AudioSource;
+     private AudioSource m_AudioSource;
 
     #region Unity Event 
     private void Start()
@@ -88,7 +88,9 @@ public class Weapon : MonoBehaviour
         //SFX
         particleFlshFire.time = 0; 
         particleFlshFire.Play();
-        m_AudioSource.PlayOneShot(weaponProperties.LaunchSFX);
+
+        m_AudioSource.clip = weaponProperties.LaunchSFX; 
+        m_AudioSource.Play();
             
     }
 

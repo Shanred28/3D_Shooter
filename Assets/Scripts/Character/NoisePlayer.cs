@@ -10,7 +10,8 @@ public class NoisePlayer : MonoBehaviour
 
     private void Start()
     {
-        enemyTeam = Destructible.GetAllNonTeamMember(soldier.TeamId);
+          enemyTeam = Destructible.GetAllNonTeamMember(soldier.TeamId);
+          startList = 0;
     }
 
     private void Update()
@@ -21,8 +22,22 @@ public class NoisePlayer : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        enemyTeam.Clear();
+    }
+
+
+    private int startList;
     private void ApllyNoise()
     {
+        if (startList == 0) 
+        {
+            enemyTeam.Clear();
+            enemyTeam = Destructible.GetAllNonTeamMember(soldier.TeamId);
+            startList = 1;
+        }
+
         foreach (Destructible dest in enemyTeam)
         {
             AiAlienSoldier ai = dest.transform.root.GetComponent<AiAlienSoldier>();

@@ -1,9 +1,10 @@
-using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CharacterMovement : MonoBehaviour
 {
+    public UnityAction<Vector3> Land;
+
     [Header("Movement")]
     [SerializeField] private float rifleRunSpeed;
     [SerializeField] private float rifleSprintSpeed;
@@ -55,6 +56,8 @@ public class CharacterMovement : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         baseCharacterHeight = characterController.height;
         baseCharacterOffsetCenter = characterController.center.y ;
+        characterController.enabled = true;
+
     }
 
     private void Update()
@@ -96,6 +99,12 @@ public class CharacterMovement : MonoBehaviour
         movementDirections += Physics.gravity * Time.fixedDeltaTime;
         if (UpdatePosition == true)
             characterController.Move(movementDirections * Time.fixedDeltaTime);
+
+        if (characterController.isGrounded == true && Mathf.Abs(movementDirections.y) > 2)
+        {
+            if (Land != null)
+                Land.Invoke(movementDirections);
+        }
     }
 
     // Вычесления направления в Update.
@@ -116,18 +125,19 @@ public class CharacterMovement : MonoBehaviour
             }
             else
                 IsMoveAction = false;
-/*            else
-            {
-                List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
+            /*            else
+                        {
+                            List<EntityContextAction> actionsList = targetActionCollector.GetActionList<EntityContextAction>();
 
-                for (int i = 0; i < actionsList.Count; i++)
-                {
+                            for (int i = 0; i < actionsList.Count; i++)
+                            {
 
-                    actionsList[i].StartAction();
-                }
+                                actionsList[i].StartAction();
+                            }
 
-                IsMoveAction = false;
-            }*/
+                            IsMoveAction = false;
+                        }*/
+
         }
     }
 
@@ -241,6 +251,7 @@ public class CharacterMovement : MonoBehaviour
             distanceToGround = Vector3.Distance(transform.position, hit.point);
          }
     }
+
 
     [SerializeField] private SpaceSoldier spaceSoldier;
     private float _flyTime;

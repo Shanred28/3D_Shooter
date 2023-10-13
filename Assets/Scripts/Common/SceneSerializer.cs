@@ -28,7 +28,17 @@ public class SceneSerializer : MonoBehaviour
         }
 
     }
-    public void SaveToFile(string filePath)
+    public void SaveScene()
+    {
+        SaveToFile("Test.dat");
+    }
+
+    public void LoadScene()
+    {
+        LoadFromFile("Test.dat");
+    }
+
+    private void SaveToFile(string filePath)
     { 
         List<SceneObjectState> savedObjects = new List<SceneObjectState>();
 
@@ -61,9 +71,9 @@ public class SceneSerializer : MonoBehaviour
         Debug.Log("Scene save. Path file: " + Application.persistentDataPath + "/" + filePath);
     }
 
-    public void LoadFromFile(string filePath)
+    private void LoadFromFile(string filePath)
     {
-       // Player.Instance.Destroy();
+        Player.Instance.Destroy();
 
         foreach (var entity in FindObjectsOfType<Entity>())
         {
@@ -87,7 +97,7 @@ public class SceneSerializer : MonoBehaviour
 
         foreach (var v in loadedObjects)
         {
-            if (_prefabsData.IsPlayerId(v.entityId))
+            if (_prefabsData.IsPlayerId(v.entityId) == true)
             {
                 GameObject p = _prefabsData.CreatePlayer();
 

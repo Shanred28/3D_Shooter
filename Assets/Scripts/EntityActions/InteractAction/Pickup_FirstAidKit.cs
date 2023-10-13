@@ -8,8 +8,6 @@ public class Pickup_FirstAidKit : TriggerInteractAction
         //characterMovement.PreapreAction(InteractProperties.InteractTransform.position);
         base.OnStartAction(owner);
 
-
-
     }
     protected override void OnEndAction(GameObject owner)
     {

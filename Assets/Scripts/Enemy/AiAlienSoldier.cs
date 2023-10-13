@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class AiAlienSoldier : MonoBehaviour
 {
@@ -109,7 +110,6 @@ public class AiAlienSoldier : MonoBehaviour
             if (Vector3.Distance(transform.position, _pursuetTarget.position) <= _aimingDistance)
             {
                 _characterMovement.Aiming();
-                print("Firee");
                 _alienSoldier.Fire(_pursuetTarget.position + new Vector3(0, 0.8f, 0));
             }
             else
@@ -149,7 +149,7 @@ public class AiAlienSoldier : MonoBehaviour
     // Action
     private void FindPotentionalTarget()
     {
-        _potentionalTarget = Destructible.FindPlayer().gameObject;
+        _potentionalTarget = Player.Instance.gameObject;
     }
 
     private void ActionUpdateTarget()
@@ -379,11 +379,11 @@ public class AiAlienSoldier : MonoBehaviour
         _agent.CalculatePath(_seekTarget, _navMeshPath);
         _agent.SetPath(_navMeshPath);
 
-        yield return new WaitForSeconds(2);
+/*        yield return new WaitForSeconds(2);
 
         _seekTarget = GetPointRandomSeekArea();
         _agent.CalculatePath(_seekTarget, _navMeshPath);
-        _agent.SetPath(_navMeshPath);
+        _agent.SetPath(_navMeshPath);*/
 
         yield return new WaitForSeconds(2);
         Alarm( AlarmType.Non);

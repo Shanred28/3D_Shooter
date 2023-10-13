@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterInputController : MonoBehaviour
@@ -15,8 +14,19 @@ public class CharacterInputController : MonoBehaviour
     public bool IsActionEveleble =false;
     private void Start()
     {
+        LockMouse();
+    }
+
+    public void LockMouse()
+    {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void UnlockMouse() 
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
     
     private void Update()

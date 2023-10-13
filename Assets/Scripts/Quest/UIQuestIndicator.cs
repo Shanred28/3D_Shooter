@@ -10,6 +10,7 @@ public class UIQuestIndicator : MonoBehaviour
     private Transform _targetQuest;
     private void Start()
     {
+        _imageTargetIndicatorQuest.gameObject.SetActive(false);
         _questCollector.QuestReceived += OnQuestReceivedQuest;
         _questCollector.QuestCompleted += OnQuestCompleted;
     }

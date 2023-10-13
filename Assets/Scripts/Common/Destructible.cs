@@ -235,5 +235,10 @@ using static UnityEngine.GraphicsBuffer;
         transform.position = s.position;
         m_HitPoints = s.hitPoins;
     }
+
+    protected void SetIdTeam(int idTeeam)
+    {
+        m_TeamId = idTeeam;
+    }
 }
 
