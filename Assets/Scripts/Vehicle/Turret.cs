@@ -23,7 +23,7 @@ public class Turret : Weapon
     {
         base.Update();
 
-        LookOnAim();
+       // LookOnAim();
     }
 
     private void LookOnAim()

@@ -9,6 +9,11 @@ public class CameraShooter : MonoBehaviour
 
     [SerializeField] private RectTransform m_ImageSigh;
 
+    private void Start()
+    {
+        m_Camera = Player.Instance.MainCamera;
+    }
+
     public void Shoot()
     {
         RaycastHit hit;

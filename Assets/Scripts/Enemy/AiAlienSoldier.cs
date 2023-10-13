@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class AiAlienSoldier : MonoBehaviour
 {
@@ -38,7 +37,7 @@ public class AiAlienSoldier : MonoBehaviour
 
     public AIBehaviour AiBehaviour { get { return _aiBehaviour; } set { _aiBehaviour = value; } } 
 
-    [SerializeField] private UI_IndicatorVisable _indicatorVisable;
+    private UI_IndicatorVisable _indicatorVisable;
 
     private PatrolPath _patrolPath;
     private NavMeshPath _navMeshPath;
@@ -61,6 +60,7 @@ public class AiAlienSoldier : MonoBehaviour
         StartBehaviour(_aiBehaviour);
         timer = Timer.CreateTimer(timeDetectingPeripheral);
         _alienSoldier.OnGetDamage += OnGetDamage;
+        _indicatorVisable = Player.Instance.IndicatorVisable;
     }
 
     private void Update()

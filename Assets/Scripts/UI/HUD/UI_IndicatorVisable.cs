@@ -50,9 +50,10 @@ public class UI_IndicatorVisable : MonoBehaviour
 
     public void SetAllarmFill(float currentTime, float timeAmount)
     {
+        _indicatorVisableImage.gameObject.SetActive(true);
         timer.Restart(timeDisableIndecator);
         timer.Play();
-        _indicatorVisableImage.gameObject.SetActive(true);
+        
         _indicatorVisableColorAlarmImage.color = Color.yellow;
         _indicatorVisableImage.fillAmount = 1 - currentTime / timeAmount;
     }

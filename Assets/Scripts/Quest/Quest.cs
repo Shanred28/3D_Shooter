@@ -5,6 +5,7 @@ public class Quest : MonoBehaviour
 {
     public UnityAction Complited;
 
+    [SerializeField] protected GameObject _owner;
     [SerializeField] private Quest _nextQuest;
 
     public Quest NextQuest => _nextQuest;
@@ -22,4 +23,9 @@ public class Quest : MonoBehaviour
     }
 
     protected virtual void UpdateCompletedCondition() { }
+
+    public void SetOwner()
+    {
+        _owner = Player.Instance.gameObject;
+    }
 }

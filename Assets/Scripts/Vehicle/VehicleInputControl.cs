@@ -8,11 +8,17 @@ public class VehicleInputControl : MonoBehaviour
 
     protected virtual void Start()
     {
+        _camera = Player.Instance.MainCamera.GetComponent<ThirdPersonCamera>();
+        _camera.transform.SetParent(transform, false);
+        AssignCamera(_camera);
         if (_camera != null)
         {
             _camera.IsRotateTarget = false;
             _camera.SetOffset(_cameraOffset);
         }
+        
+       //_camera.transform.SetParent(transform,false);
+       // AssignCamera(_camera);
     }
 
     protected virtual void Update()
@@ -27,5 +33,6 @@ public class VehicleInputControl : MonoBehaviour
         _camera.IsRotateTarget = false;
         _camera.SetOffset(_cameraOffset);
         _camera.SetTarget(_vehicle.transform);
+        //_camera.transform.LookAt(transform);
     }
 }

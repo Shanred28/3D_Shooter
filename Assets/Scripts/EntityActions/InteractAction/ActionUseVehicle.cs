@@ -19,8 +19,8 @@ public class ActionUseVehicle : ActionInteract
 
     [SerializeField] private GameObject _visualModel;
 
-    [SerializeField] private GameObject _hudPlayer;
-    [SerializeField] private GameObject _hudVehicle;
+    //[SerializeField] private GameObject _hudPlayer;
+    //[SerializeField] private GameObject _hudVehicle;
 
     [Header("Setting Fire")]
     [SerializeField] private PlayerShooter _playerShooter;
@@ -77,8 +77,8 @@ public class ActionUseVehicle : ActionInteract
         }
 
         // HUD
-        _hudPlayer.SetActive(false);
-        _hudVehicle.SetActive(true);
+        //_hudPlayer.SetActive(false);
+        //_hudVehicle.SetActive(true);
 
         prop.vehicle.OnStartDrive();
 
@@ -125,8 +125,8 @@ public class ActionUseVehicle : ActionInteract
         }
 
         // HUD
-        _hudPlayer.SetActive(true);
-        _hudVehicle.SetActive(false);
+       // _hudPlayer.SetActive(true);
+        //.SetActive(false);
 
         prop.vehicle.OffStartDrive();
       

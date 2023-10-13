@@ -12,7 +12,7 @@ public class QuestCollector : MonoBehaviour
 
     [SerializeField] private Quest[] _allQuest;
 
-    private void Awake()
+    private void Start()
     {
         if (_currentQuest != null)
         {
@@ -26,6 +26,7 @@ public class QuestCollector : MonoBehaviour
 
         if (QuestReceived != null)
             QuestReceived.Invoke(_currentQuest);
+        _currentQuest.SetOwner();
 
         _currentQuest.Complited += OnQuestCompleted;
     }
